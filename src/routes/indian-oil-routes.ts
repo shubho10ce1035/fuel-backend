@@ -1,6 +1,6 @@
 import { Router, Status } from "../../deps.ts";
 import { redisClient } from "../helpers/index.ts";
-import { stateCodeMapping } from "../services/indianoilmodule/constants.ts";
+import { stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
 
 const indianoilRoutes = new Router()
 
@@ -23,10 +23,8 @@ indianoilRoutes
 		if(cacheResponse) {
 			console.info('Response from cache', cacheKey);
 			context.response.body = {
-				data: {
-					headers : ["Petrol Pump Name","COVID-19 Food &amp; Relief Contact","Address","Dealer/Partner/Operator/Contact Person Name","Contact No","Petrol Price","Diesel Price","XTRAPREMIUM Price","XTRAMILE Price","XP100 Price","XP95 Price","XG Price","E100 Price","District","State","State Office","Divisional Office","Sales Area","Sales Officer Contact No"],
-					data: JSON.parse(cacheResponse)
-				}
+				headers : ["Petrol Pump Name","COVID-19 Food &amp; Relief Contact","Address","Dealer/Partner/Operator/Contact Person Name","Contact No","Petrol Price","Diesel Price","XTRAPREMIUM Price","XTRAMILE Price","XP100 Price","XP95 Price","XG Price","E100 Price","District","State","State Office","Divisional Office","Sales Area","Sales Officer Contact No"],
+				allValues: JSON.parse(cacheResponse)
 			};
 	
 			context.response.type = "json";
@@ -137,13 +135,13 @@ indianoilRoutes
 
 		const apibackendresponse = {
 			headers : ["Petrol Pump Name","COVID-19 Food &amp; Relief Contact","Address","Dealer/Partner/Operator/Contact Person Name","Contact No","Petrol Price","Diesel Price","XTRAPREMIUM Price","XTRAMILE Price","XP100 Price","XP95 Price","XG Price","E100 Price","District","State","State Office","Divisional Office","Sales Area","Sales Officer Contact No"],
-			data: allValues
+			allValues: allValues
 		}
 		console.log('setting first request/response to cache', cacheKey)
 		redisClient.set(cacheKey, JSON.stringify(allValues));
 
     context.response.body = {
-      data: apibackendresponse
+      ...apibackendresponse
     };
 
     context.response.type = "json";
