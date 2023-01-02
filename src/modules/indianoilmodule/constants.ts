@@ -31,8 +31,9 @@ export const stateCodeMapping = {
 	"TN":"TN",
 	"TG":"TG",
 	"TR":"TRP",
+	"DN":"DDH",
 	"DD":"DDH",
 	"UP":"UP",
 	"UT":"UTK",
 	"WB":"WB",
-}  
+}
