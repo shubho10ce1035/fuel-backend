@@ -1,9 +1,8 @@
 import { Router } from "../../deps.ts";
-import CommonController from './../controllers/common.ts'
+import CommonController from "./../controllers/common.ts";
 
-const commonRoutes = new Router()
+const commonRoutes = new Router();
 
-commonRoutes
-  .get('/getAllStates', CommonController.getStates);
+commonRoutes.get("/getAllStates", CommonController.getStates);
 
 export default commonRoutes;
