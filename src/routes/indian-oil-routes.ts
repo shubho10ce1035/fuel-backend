@@ -76,47 +76,47 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		let district = "",
 			contact = "",
 			state = "",
-			stateoffice = "",
-			divisionaloffice = "",
-			petrolpumpname = "",
+			stateOffice = "",
+			divisionalOffice = "",
+			petrolPumpName = "",
 			address = "",
-			salesoffice = "",
-			salescontactnumber = "",
-			contactno = "",
+			salesOffice = "",
+			salesContactNumber = "",
+			contactNo = "",
 			ms = "",
 			hsd = "",
 			xp = "",
 			xm = "",
-			rocode = "";
-		let covideliefContact = "",
+			roCode = "";
+		let covidReliefContact = "",
 			xp100 = "",
 			xp95 = "",
 			xg = "",
 			e100 = "",
 			lat = "",
-			longi = "";
+			long = "";
 		for (let j = 0; j < columnCount; j++) {
 			if (j === 1) {
 				lat = locations[i].split(",")[j];
 			}
 			if (j === 2) {
-				longi = locations[i].split(",")[j];
+				long = locations[i].split(",")[j];
 			}
 			if (j === 39) {
 				if (locations[i].split(",")[j - 1] === "Y") {
-					covideliefContact =
+					covidReliefContact =
 						locations[i].split(",")[j] +
 						" --" +
 						locations[i].split(",")[j + 1];
 				} else {
-					covideliefContact = "N/A";
+					covidReliefContact = "N/A";
 				}
 			}
 			if (j == 34) {
 				district = locations[i].split(",")[j];
 			}
 			if (j == 36) {
-				contactno = locations[i].split(",")[j];
+				contactNo = locations[i].split(",")[j];
 			}
 			if (j == 30) {
 				contact = locations[i].split(",")[j];
@@ -124,7 +124,6 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 			if (j == 35) {
 				state = locations[i].split(",")[j];
 			}
-
 			if (j == 25) {
 				ms = locations[i].split(",")[j];
 			}
@@ -137,27 +136,26 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 			if (j == 28) {
 				xm = locations[i].split(",")[j];
 			}
-
 			if (j == 31) {
-				stateoffice = locations[i].split(",")[j];
+				stateOffice = locations[i].split(",")[j];
 			}
 			if (j == 32) {
-				divisionaloffice = locations[i].split(",")[j];
+				divisionalOffice = locations[i].split(",")[j];
 			}
 			if (j == 0) {
-				petrolpumpname = locations[i].split(",")[j];
+				petrolPumpName = locations[i].split(",")[j];
 			}
 			if (j == 3) {
 				address = locations[i].split(",")[j];
 			}
 			if (j == 33) {
-				salesoffice = locations[i].split(",")[j];
+				salesOffice = locations[i].split(",")[j];
 			}
 			if (j == 29) {
-				salescontactnumber = locations[i].split(",")[j];
+				salesContactNumber = locations[i].split(",")[j];
 			}
 			if (j == 37) {
-				rocode = locations[i].split(",")[j];
+				roCode = locations[i].split(",")[j];
 			}
 			if (j == 41) {
 				xp100 = locations[i].split(",")[j];
@@ -173,14 +171,14 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 			}
 		}
 		const tempValue = [
-			rocode,
+			roCode,
 			lat,
-			longi,
-			petrolpumpname,
-			covideliefContact,
+			long,
+			petrolPumpName,
+			covidReliefContact,
 			address,
 			contact,
-			contactno,
+			contactNo,
 			ms,
 			hsd,
 			xp,
@@ -191,10 +189,10 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 			e100,
 			district,
 			state,
-			stateoffice,
-			divisionaloffice,
-			salesoffice,
-			salescontactnumber,
+			stateOffice,
+			divisionalOffice,
+			salesOffice,
+			salesContactNumber,
 		];
 		allValues.push(tempValue);
 	}
