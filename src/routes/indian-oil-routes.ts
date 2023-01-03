@@ -67,6 +67,7 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		requestOptions
 	);
 	const data = await apiResponse.text();
+	console.log({apiResponse, data})
 	const locations = data.split("|");
 	const singleRow = locations[0];
 	const columnCount = singleRow.split(",").length;
@@ -170,7 +171,7 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 				e100 = locations[i].split(",")[j];
 			}
 		}
-		const tempValue = [
+		const tempValue = {
 			roCode,
 			lat,
 			long,
@@ -193,7 +194,7 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 			divisionalOffice,
 			salesOffice,
 			salesContactNumber,
-		];
+		}
 		allValues.push(tempValue);
 	}
 
