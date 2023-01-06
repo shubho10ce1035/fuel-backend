@@ -40,7 +40,7 @@ export const States = [
 	{ code: "WB", name: "West Bengal" },
 ];
 
-export const District = [
+export const Districts = [
 	{ districtCode: "TG001", districtName: "ADILABAD" },
 	{ districtCode: "MP051", districtName: "AGAR MALWA" },
 	{ districtCode: "UP001", districtName: "AGRA" },
