@@ -1,8 +1,14 @@
 import { Router, Status } from "../../deps.ts";
 import { redisClient } from "../helpers/index.ts";
-import { stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
+import { FuelTypesIndianOil, stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
 
 const indianoilRoutes = new Router();
+
+indianoilRoutes.get("/fueltypes", async (context) => {
+	context.response.body = FuelTypesIndianOil
+	context.response.type = "json";
+	context.response.status = Status.OK;
+});
 
 indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 	const body = await context.request.body({ type: "json" }).value;
@@ -60,12 +66,13 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		headers: myHeaders,
 		body: urlencoded,
 		redirect: "follow",
-	};
+	} as RequestInit;
 
 	const apiResponse = await fetch(
 		"https://associates.indianoil.co.in/PumpLocator/StateWiseLocator",
 		requestOptions
 	);
+
 	const data = await apiResponse.text();
 	const locations = data.split("|");
 	const singleRow = locations[0];
@@ -221,6 +228,7 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		],
 		allValues: allValues,
 	};
+
 	console.log("setting first request/response to cache", cacheKey);
 	redisClient.set(cacheKey, JSON.stringify(allValues));
 
@@ -231,5 +239,46 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 	context.response.type = "json";
 	context.response.status = Status.OK;
 });
+
+indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
+	
+	const body = await context.request.body({type: "json"}).value;
+	if (!context.request.hasBody) {
+		context.response.status = 400;
+		context.response.body = {
+			success: false,
+			message: "No data provided",
+		};
+		return;
+	}
+	let {latitude, longitude, fuelType, range} = body;
+	
+	var myHeaders = new Headers();
+	myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+	var urlencoded = new URLSearchParams();
+	urlencoded.append("latitude", latitude);
+	urlencoded.append("longitude", longitude);
+	urlencoded.append("fuel", fuelType);
+	urlencoded.append("range", range);
+
+	const requestOptions = {
+		method: "POST",
+		headers: myHeaders,
+		body: urlencoded,
+		redirect: "follow",
+	} as RequestInit;
+
+	const apiResponse = await fetch(
+		'https://associates.indianoil.co.in/PumpLocator/NearLocations',
+		requestOptions
+	)
+	const data = await apiResponse.text();
+	const entries = data.split("|");
+	const singleRow = entries[0];
+	const columnCount = singleRow.split(",").length;
+
+	context.response.type = "json";
+	context.response.status = Status.OK;
+})
 
 export default indianoilRoutes;
