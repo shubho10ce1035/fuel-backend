@@ -1,15 +1,9 @@
-import { Router, Status } from "../../deps.ts";
-import { States } from "../shared/constants.ts";
+import { Router } from "../../deps.ts";
+import CommonController from "../controllers/geo.ts";
 
-const commonRoutes = new Router()
+const commonRoutes = new Router();
 
-commonRoutes
-  .get(('/getAllStates'), (context) => {
-    context.response.body = {
-      states: States
-    };
-    context.response.type = "json";
-    context.response.status = Status.OK
-  });
+commonRoutes.get("/getAllStates", CommonController.getStates);
+commonRoutes.get("/getAllDistricts", CommonController.getDistricts);
 
 export default commonRoutes;
