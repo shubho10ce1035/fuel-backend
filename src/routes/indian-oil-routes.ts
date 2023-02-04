@@ -1,6 +1,7 @@
 import { Router, Status } from "../../deps.ts";
 import { redisClient } from "../helpers/index.ts";
 import { FuelTypesIndianOil, stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
+import { LocationApiResponseHeaders } from "../shared/constants.ts";
 
 const indianoilRoutes = new Router();
 
@@ -230,7 +231,7 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 	};
 
 	console.log("setting first request/response to cache", cacheKey);
-	redisClient.set(cacheKey, JSON.stringify(allValues));
+	redisClient.setex(cacheKey, 14400, JSON.stringify(allValues));
 
 	context.response.body = {
 		...apibackendresponse,
@@ -251,6 +252,22 @@ indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
 		};
 		return;
 	}
+	
+	const cacheKey = JSON.stringify(body)
+	const cacheResponse = await redisClient.get(cacheKey);
+
+	if (cacheResponse) {
+		console.info("Response from cache", cacheKey);
+		context.response.body = {
+			headers: LocationApiResponseHeaders,
+			allValues: JSON.parse(cacheResponse),
+		};
+
+		context.response.type = "json";
+		context.response.status = Status.OK;
+		return;
+	}
+
 	let { latitude, longitude, fuelType, range } = body;
 
 	var myHeaders = new Headers();
@@ -428,37 +445,16 @@ indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
 		];
 		allValues.push(tempValue);
 	}
+	
 	context.response.type = "json";
+	
 	const apibackendresponse = {
-		headers: [
-			"RoCode",
-			"petrol Pump Name",
-			"covid Relief Contact",
-			"Dealer",
-			"PetrolPrice",
-			"Diesel",
-			"Xp",
-			"Xm",
-			"Xp100",
-			"Xp95",
-			"Xg",
-			"E100",
-			"District",
-			"State",
-			"State Office",
-			"Divisional Office",
-			"SalesOfficer Contact No",
-			"Distance from Source",
-			"Battery",
-			"CngPrice",
-			"CBGPrice",
-			"Cng",
-			"Address",
-			"Sales Area",
-			"EV Charging Station"
-		],
+		headers: LocationApiResponseHeaders,
 		allValues: allValues,
 	};
+
+	console.log("setting first request/response to cache", cacheKey);
+	redisClient.setex(cacheKey, 14400, JSON.stringify(allValues));
 
 	context.response.body = {
 		...apibackendresponse

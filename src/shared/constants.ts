@@ -794,3 +794,32 @@ export const Districts = [
 	{ districtCode: "MH032", districtName: "YAVATMAL" },
 	{ districtCode: "NL007", districtName: "ZUNHEBOTO" },
 ];
+
+
+export const LocationApiResponseHeaders = [
+	"RoCode",
+	"petrol Pump Name",
+	"covid Relief Contact",
+	"Dealer",
+	"PetrolPrice",
+	"Diesel",
+	"Xp",
+	"Xm",
+	"Xp100",
+	"Xp95",
+	"Xg",
+	"E100",
+	"District",
+	"State",
+	"State Office",
+	"Divisional Office",
+	"SalesOfficer Contact No",
+	"Distance from Source",
+	"Battery",
+	"CngPrice",
+	"CBGPrice",
+	"Cng",
+	"Address",
+	"Sales Area",
+	"EV Charging Station"
+]
