@@ -278,6 +278,9 @@ indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
 	const columnCount = singleRow.split(",").length;
 
 	context.response.type = "json";
+	context.response.body = {
+		count: columnCount
+	};
 	context.response.status = Status.OK;
 })
 
