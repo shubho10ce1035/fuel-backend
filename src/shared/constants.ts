@@ -821,5 +821,7 @@ export const LocationApiResponseHeaders = [
 	"Cng",
 	"Address",
 	"Sales Area",
-	"EV Charging Station"
+	"EV Charging Station",
+	"Latitude",
+	"Longitude"
 ]

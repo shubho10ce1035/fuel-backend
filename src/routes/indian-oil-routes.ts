@@ -298,9 +298,16 @@ indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
 	for (let i = 0; i < locations.length - 1; i++) {
 		let District = "", Dealer = "", State = "", StateOffice = "", DivisionalOffice = "", petrolPumpName = "", Address = "", SalesArea = "", SalesOfficerContactNo = "", m = "",
 			PetrolPrice = "", Diesel = "", xp = "", xm = "", DistancefromSource = "", roCode = "", xp100 = "", xp95 = "", xg = "", e100 = "", ev = "", EVChargingStation = "", Battery = "", cng = "", cngPrice = "", cbgPrice = "";
-		let covidReliefContact = "";
+		let covidReliefContact = "",lat = "",long = "";
 		for (let j = 0; j < columnCount; j++) {
 			switch (j) {
+				case 1:
+					lat = locations[i].split(",")[j];
+					break;
+				
+				case 2 :
+					long = locations[i].split(",")[j];
+					break
 				case 40:
 					if (locations[i].split(",")[j - 1] === 'Y') {
 						covidReliefContact = locations[i].split(",")[j] + " [" + locations[i].split(",")[j + 1] + "]";
@@ -441,7 +448,9 @@ indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
 			cng,
 			Address,
 			SalesArea,
-			EVChargingStation
+			EVChargingStation,
+			lat,
+			long
 		];
 		allValues.push(tempValue);
 	}
