@@ -37,3 +37,42 @@ export const stateCodeMapping = {
 	"UT":"UTK",
 	"WB":"WB",
 }
+
+
+export const FuelTypesIndianOil = [
+	{
+		"code":"MS",
+		"name":"Petrol"
+	},
+	{
+		"code":"HSD",
+		"name":"Diesel"
+	},
+	{
+		"code":"XP95",
+		"name":"XP95 -95 Octane Gasoline"
+	},
+	{
+		"code":"XP100",
+		"name":"XP100 – 100 Octane Premium Petrol"
+	},
+	{
+		"code":"XG",
+		"name":"XTRAGREEN Eco-friendly Diesel"
+	},
+	{
+		"code":"CNG",
+		"name":"CNG STATIONS"
+	},
+	{
+		"code":"CB",
+		"name":"CBG STATIONS"
+	},
+	{
+		"code":"EVCS",
+		"name":"EV Charging Stations",
+	},
+	{
+		"code":"BATTERY",
+		"name":"Battery Swapping Stations"
+	}]

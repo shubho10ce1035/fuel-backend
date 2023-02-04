@@ -1,8 +1,15 @@
 import { Router, Status } from "../../deps.ts";
 import { redisClient } from "../helpers/index.ts";
-import { stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
+import { FuelTypesIndianOil, stateCodeMapping } from "../modules/indianoilmodule/constants.ts";
+import { LocationApiResponseHeaders } from "../shared/constants.ts";
 
 const indianoilRoutes = new Router();
+
+indianoilRoutes.get("/fueltypes", async (context) => {
+	context.response.body = FuelTypesIndianOil
+	context.response.type = "json";
+	context.response.status = Status.OK;
+});
 
 indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 	const body = await context.request.body({ type: "json" }).value;
@@ -60,12 +67,13 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		headers: myHeaders,
 		body: urlencoded,
 		redirect: "follow",
-	};
+	} as RequestInit;
 
 	const apiResponse = await fetch(
 		"https://associates.indianoil.co.in/PumpLocator/StateWiseLocator",
 		requestOptions
 	);
+
 	const data = await apiResponse.text();
 	const locations = data.split("|");
 	const singleRow = locations[0];
@@ -221,8 +229,9 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 		],
 		allValues: allValues,
 	};
+
 	console.log("setting first request/response to cache", cacheKey);
-	redisClient.set(cacheKey, JSON.stringify(allValues));
+	redisClient.setex(cacheKey, 14400, JSON.stringify(allValues));
 
 	context.response.body = {
 		...apibackendresponse,
@@ -231,5 +240,236 @@ indianoilRoutes.post("/getStateFuelDetails", async (context) => {
 	context.response.type = "json";
 	context.response.status = Status.OK;
 });
+
+indianoilRoutes.post("/getNearByPumpDetails", async (context) => {
+
+	const body = await context.request.body({ type: "json" }).value;
+	if (!context.request.hasBody) {
+		context.response.status = 400;
+		context.response.body = {
+			success: false,
+			message: "No data provided",
+		};
+		return;
+	}
+	
+	const cacheKey = JSON.stringify(body)
+	const cacheResponse = await redisClient.get(cacheKey);
+
+	if (cacheResponse) {
+		console.info("Response from cache", cacheKey);
+		context.response.body = {
+			headers: LocationApiResponseHeaders,
+			allValues: JSON.parse(cacheResponse),
+		};
+
+		context.response.type = "json";
+		context.response.status = Status.OK;
+		return;
+	}
+
+	let { latitude, longitude, fuelType, range } = body;
+
+	var myHeaders = new Headers();
+	myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+	var urlencoded = new URLSearchParams();
+	urlencoded.append("latitude", latitude);
+	urlencoded.append("longitude", longitude);
+	urlencoded.append("fuel", fuelType);
+	urlencoded.append("range", range);
+
+	const requestOptions = {
+		method: "POST",
+		headers: myHeaders,
+		body: urlencoded,
+		redirect: "follow",
+	} as RequestInit;
+
+	const apiResponse = await fetch(
+		'https://associates.indianoil.co.in/PumpLocator/NearLocations',
+		requestOptions
+	)
+	const data = await apiResponse.text();
+	const locations = data.split("|");
+	const singleRow = locations[0];
+	const columnCount = singleRow.split(",").length;
+	let allValues: any = [];
+
+	for (let i = 0; i < locations.length - 1; i++) {
+		let District = "", Dealer = "", State = "", StateOffice = "", DivisionalOffice = "", petrolPumpName = "", Address = "", SalesArea = "", SalesOfficerContactNo = "", m = "",
+			PetrolPrice = "", Diesel = "", xp = "", xm = "", DistancefromSource = "", roCode = "", xp100 = "", xp95 = "", xg = "", e100 = "", ev = "", EVChargingStation = "", Battery = "", cng = "", cngPrice = "", cbgPrice = "";
+		let covidReliefContact = "",lat = "",long = "";
+		for (let j = 0; j < columnCount; j++) {
+			switch (j) {
+				case 1:
+					lat = locations[i].split(",")[j];
+					break;
+				
+				case 2 :
+					long = locations[i].split(",")[j];
+					break
+				case 40:
+					if (locations[i].split(",")[j - 1] === 'Y') {
+						covidReliefContact = locations[i].split(",")[j] + " [" + locations[i].split(",")[j + 1] + "]";
+					} else {
+						covidReliefContact = "N/A";
+					}
+					break;
+
+				case 34:
+					District = locations[i].split(",")[j];
+					break;
+
+				case 36:
+					m = locations[i].split(",")[j];
+					break;
+
+				case 30:
+					Dealer = locations[i].split(",")[j] + " (" + locations[i].split(",")[36] + " )";
+					break;
+
+				case 35:
+					State = locations[i].split(",")[j];
+					break;
+
+				case 25:
+					PetrolPrice = locations[i].split(",")[j];
+					break;
+
+				case 26:
+					Diesel = locations[i].split(",")[j];
+					break;
+
+				case 46:
+					ev = locations[i].split(",")[j];
+					break;
+
+				case 47:
+					cng = locations[i].split(",")[j];
+					break;
+
+				case 48:
+					EVChargingStation = locations[i].split(",")[j];
+					break;
+				case 49:
+					Battery = locations[i].split(",")[j];
+
+				case 50:
+					cngPrice = locations[i].split(",")[j];
+					break;
+
+				case 51:
+					cbgPrice = locations[i].split(",")[j];
+					break;
+
+				case 37:
+					let val: any = locations[i].split(",")[j];
+					if (val < 1) {
+						val = val * 1000 + "M";
+					} else {
+						val = val + "Km";
+					}
+					DistancefromSource = val;
+					break;
+
+				case 31:
+					StateOffice = locations[i].split(",")[j];
+					break
+
+				case 32:
+					DivisionalOffice = locations[i].split(",")[j];
+					break
+
+				case 0:
+					petrolPumpName = locations[i].split(",")[j];
+					break
+
+				case 3:
+					Address = locations[i].split(",")[j];
+					break
+
+				case 33:
+					SalesArea = locations[i].split(",")[j];
+					break
+
+				case 29:
+					SalesOfficerContactNo = locations[i].split(",")[j];
+					break
+
+				case 1:
+					SalesOfficerContactNo = locations[i].split(",")[j];
+					break
+
+				case 38:
+					roCode = locations[i].split(",")[j];
+					break
+
+				case 42:
+					xp100 = locations[i].split(",")[j];
+					break
+
+				case 43:
+					xp95 = locations[i].split(",")[j];
+					break
+
+				case 44:
+					xg = locations[i].split(",")[j];
+					break
+
+				case 45:
+					e100 = locations[i].split(",")[j];
+					break
+
+			}
+
+		}
+		const tempValue = [
+			roCode,
+			petrolPumpName,
+			covidReliefContact,
+			Dealer,
+			PetrolPrice,
+			Diesel,
+			xp,
+			xm,
+			xp100,
+			xp95,
+			xg,
+			e100,
+			District,
+			State,
+			StateOffice,
+			DivisionalOffice,
+			SalesOfficerContactNo,
+			DistancefromSource,
+			Battery,
+			cngPrice,
+			cbgPrice,
+			cng,
+			Address,
+			SalesArea,
+			EVChargingStation,
+			lat,
+			long
+		];
+		allValues.push(tempValue);
+	}
+	
+	context.response.type = "json";
+	
+	const apibackendresponse = {
+		headers: LocationApiResponseHeaders,
+		allValues: allValues,
+	};
+
+	console.log("setting first request/response to cache", cacheKey);
+	redisClient.setex(cacheKey, 14400, JSON.stringify(allValues));
+
+	context.response.body = {
+		...apibackendresponse
+	};
+
+	context.response.status = Status.OK;
+})
 
 export default indianoilRoutes;
