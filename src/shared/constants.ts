@@ -1,4 +1,3 @@
-export const PORT = 4400;
 
 export const States = [
 	{ code: "AN", name: "Andaman and Nicobar Islands" },
@@ -825,3 +824,7 @@ export const LocationApiResponseHeaders = [
 	"Latitude",
 	"Longitude"
 ]
+
+export const ProdCorsObject = {
+	origin: ['https://www.fillit.in'],
+}
